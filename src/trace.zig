@@ -181,9 +181,16 @@ pub const Span = struct {
 };
 
 fn fillRandomBytes(buf: []u8) void {
-    var ts: std.posix.timespec = undefined;
-    _ = std.posix.system.clock_gettime(.REALTIME, &ts);
-    const seed = @as(u64, @intCast(ts.nsec)) ^ (@as(u64, @intCast(ts.sec)) << 32) ^ global_seq;
+    var seed: u64 = global_seq;
+    if (@import("builtin").os.tag == .windows) {
+        var pc: std.os.windows.LARGE_INTEGER = undefined;
+        _ = std.os.windows.ntdll.RtlQueryPerformanceCounter(&pc);
+        seed ^= @as(u64, @intCast(@max(0, pc)));
+    } else {
+        var ts: std.posix.timespec = undefined;
+        _ = std.posix.system.clock_gettime(.REALTIME, &ts);
+        seed ^= @as(u64, @intCast(ts.nsec)) ^ (@as(u64, @intCast(ts.sec)) << 32);
+    }
     global_seq +%= 0x9e3779b97f4a7c15;
 
     var prng = std.Random.DefaultPrng.init(seed);
@@ -191,9 +198,15 @@ fn fillRandomBytes(buf: []u8) void {
 }
 
 fn getMonotonicNs() u64 {
-    var ts: std.posix.timespec = undefined;
-    _ = std.posix.system.clock_gettime(.MONOTONIC, &ts);
-    return @as(u64, @intCast(ts.sec)) * 1_000_000_000 + @as(u64, @intCast(ts.nsec));
+    if (@import("builtin").os.tag == .windows) {
+        var pc: std.os.windows.LARGE_INTEGER = undefined;
+        _ = std.os.windows.ntdll.RtlQueryPerformanceCounter(&pc);
+        return @as(u64, @intCast(@max(0, pc))) * 100;
+    } else {
+        var ts: std.posix.timespec = undefined;
+        _ = std.posix.system.clock_gettime(.MONOTONIC, &ts);
+        return @as(u64, @intCast(ts.sec)) * 1_000_000_000 + @as(u64, @intCast(ts.nsec));
+    }
 }
 
 test "w3c traceparent serialization and deserialization" {

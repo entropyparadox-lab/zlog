@@ -79,13 +79,22 @@ pub const Logger = struct {
 };
 
 fn formatAnsi(writer: *StackWriter, level: types.Level, msg: []const u8, fields: anytype) !void {
-    var ts: std.posix.timespec = undefined;
-    _ = std.posix.system.clock_gettime(.REALTIME, &ts);
-    const sec = @as(u64, @intCast(ts.sec));
+    var sec: u64 = 0;
+    var ms: u64 = 0;
+    if (@import("builtin").os.tag == .windows) {
+        var pc: std.os.windows.LARGE_INTEGER = undefined;
+        _ = std.os.windows.ntdll.RtlQueryPerformanceCounter(&pc);
+        sec = @as(u64, @intCast(@max(0, pc))) / 10_000_000;
+        ms = (@as(u64, @intCast(@max(0, pc))) / 10_000) % 1000;
+    } else {
+        var ts: std.posix.timespec = undefined;
+        _ = std.posix.system.clock_gettime(.REALTIME, &ts);
+        sec = @as(u64, @intCast(ts.sec));
+        ms = @as(u64, @intCast(ts.nsec)) / 1_000_000;
+    }
     const hours = (sec / 3600) % 24;
     const mins = (sec / 60) % 60;
     const secs = sec % 60;
-    const ms = @as(u64, @intCast(ts.nsec)) / 1_000_000;
 
     // Timestamp & Badge
     try writer.print("\x1b[90m{d:0>2}:{d:0>2}:{d:0>2}.{d:0>3}\x1b[0m {s}{s: <5}\x1b[0m \x1b[1;37m{s}\x1b[0m", .{
@@ -112,9 +121,16 @@ fn formatAnsi(writer: *StackWriter, level: types.Level, msg: []const u8, fields:
 }
 
 fn formatNdjson(writer: *StackWriter, level: types.Level, msg: []const u8, fields: anytype) !void {
-    var ts: std.posix.timespec = undefined;
-    _ = std.posix.system.clock_gettime(.REALTIME, &ts);
-    const timestamp_ms = @as(u64, @intCast(ts.sec)) * 1000 + @as(u64, @intCast(ts.nsec)) / 1_000_000;
+    var timestamp_ms: u64 = 0;
+    if (@import("builtin").os.tag == .windows) {
+        var pc: std.os.windows.LARGE_INTEGER = undefined;
+        _ = std.os.windows.ntdll.RtlQueryPerformanceCounter(&pc);
+        timestamp_ms = @as(u64, @intCast(@max(0, pc))) / 10_000;
+    } else {
+        var ts: std.posix.timespec = undefined;
+        _ = std.posix.system.clock_gettime(.REALTIME, &ts);
+        timestamp_ms = @as(u64, @intCast(ts.sec)) * 1000 + @as(u64, @intCast(ts.nsec)) / 1_000_000;
+    }
 
     try writer.print("{{\"time\":{d},\"level\":\"{s}\",\"msg\":\"", .{
         timestamp_ms,
