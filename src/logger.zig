@@ -44,7 +44,7 @@ pub const Logger = struct {
     }
 
     pub fn log(self: *Logger, level: types.Level, msg: []const u8, fields: anytype) !void {
-        if (@intFromEnum(level) < @intFromEnum(self.config.min_level)) return;
+        if (@backingInt(level) < @backingInt(self.config.min_level)) return;
 
         var writer = StackWriter{};
 
@@ -110,9 +110,9 @@ fn formatAnsi(writer: *StackWriter, level: types.Level, msg: []const u8, fields:
     // Fields
     const FieldsType = @TypeOf(fields);
     if (@typeInfo(FieldsType) == .@"struct") {
-        inline for (@typeInfo(FieldsType).@"struct".fields) |f| {
-            const val = @field(fields, f.name);
-            try writer.print(" \x1b[36m{s}\x1b[0m=", .{f.name});
+        inline for (@typeInfo(FieldsType).@"struct".field_names) |f_name| {
+            const val = @field(fields, f_name);
+            try writer.print(" \x1b[36m{s}\x1b[0m=", .{f_name});
             try formatValueAnsi(writer, val);
         }
     }
@@ -141,9 +141,9 @@ fn formatNdjson(writer: *StackWriter, level: types.Level, msg: []const u8, field
 
     const FieldsType = @TypeOf(fields);
     if (@typeInfo(FieldsType) == .@"struct") {
-        inline for (@typeInfo(FieldsType).@"struct".fields) |f| {
-            const val = @field(fields, f.name);
-            try writer.print(",\"{s}\":", .{f.name});
+        inline for (@typeInfo(FieldsType).@"struct".field_names) |f_name| {
+            const val = @field(fields, f_name);
+            try writer.print(",\"{s}\":", .{f_name});
             try formatValueJson(writer, val);
         }
     }
@@ -159,9 +159,9 @@ fn formatCompact(writer: *StackWriter, level: types.Level, msg: []const u8, fiel
 
     const FieldsType = @TypeOf(fields);
     if (@typeInfo(FieldsType) == .@"struct") {
-        inline for (@typeInfo(FieldsType).@"struct".fields) |f| {
-            const val = @field(fields, f.name);
-            try writer.print(" {s}=", .{f.name});
+        inline for (@typeInfo(FieldsType).@"struct".field_names) |f_name| {
+            const val = @field(fields, f_name);
+            try writer.print(" {s}=", .{f_name});
             try formatValueAnsi(writer, val);
         }
     }
