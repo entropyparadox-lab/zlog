@@ -1,11 +1,11 @@
 # zlog 🪵
 
-[![Zig Version](https://img.shields.io/badge/Zig-0.16.0%2B-orange.svg)](https://ziglang.org)
+[![Zig Version](https://img.shields.io/badge/Zig-0.17.0%2B-orange.svg)](https://ziglang.org)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Zero-Allocation](https://img.shields.io/badge/Zero--Allocation-Stack%20Fast--Path-brightgreen.svg)]()
 [![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-W3C%20TraceContext-purple.svg)]()
 
-**Zero-Allocation Structured Logger, ANSI/NDJSON Formatters & W3C OpenTelemetry Tracing for Pure Zig (v0.16.0+)**
+**Zero-Allocation Structured Logger, ANSI/NDJSON Formatters & W3C OpenTelemetry Tracing for Pure Zig (v0.17.0+)**
 
 `zlog` brings fast, ergonomic structured logging and distributed tracing to Zig. It features **zero heap allocations** on the logging fast-path (using an inline 4KB stack buffer and comptime struct reflection), high-contrast ANSI terminal formatting, production-grade NDJSON streaming, and full **W3C TraceContext** (`traceparent`) / **OpenTelemetry OTLP** span correlation.
 
@@ -31,7 +31,7 @@
   - **Hierarchical Spans**: Nested span timing, status codes, and trace context propagation.
   - **OTLP/JSON Exporter**: Formats spans into OpenTelemetry Collector JSON payloads for `zfetch`.
 - 🔌 **Pluggable Sinks**: `StdioSink` (stdout/stderr), `MemorySink` (unit testing), and custom sinks.
-- 📦 **Pure Zig 0.16.0+**: Zero C dependencies, instant build times, fully cross-compilable.
+- 📦 **Pure Zig 0.17.0+**: Zero C dependencies, instant build times, fully cross-compilable.
 
 ---
 
