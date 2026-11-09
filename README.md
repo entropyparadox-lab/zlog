@@ -7,6 +7,8 @@
 
 **Zero-Allocation Structured Logger, ANSI/NDJSON Formatters & W3C OpenTelemetry Tracing for Pure Zig (v0.17.0+)**
 
+Tested with Zig **0.17.1**; minimum supported Zig version: **0.17.0**.
+
 `zlog` brings fast, ergonomic structured logging and distributed tracing to Zig. It features **zero heap allocations** on the logging fast-path (using an inline 4KB stack buffer and comptime struct reflection), high-contrast ANSI terminal formatting, production-grade NDJSON streaming, and full **W3C TraceContext** (`traceparent`) / **OpenTelemetry OTLP** span correlation.
 
 ---
@@ -37,10 +39,11 @@
 
 ## Installation (`build.zig.zon`)
 
-Add `zlog` to your `build.zig.zon`:
+Add `zlog` to your `build.zig.zon` using the **development `main` archive**
+(not a versioned release; its contents change as `main` advances):
 
 ```bash
-zig fetch --save https://github.com/entropyparadox-lab/zlog/archive/refs/tags/v1.0.0.tar.gz
+zig fetch --save https://github.com/entropyparadox-lab/zlog/archive/refs/heads/main.tar.gz
 ```
 
 In your `build.zig`:

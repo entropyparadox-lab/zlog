@@ -6,8 +6,8 @@ Thank you for contributing to `zlog`! To maintain high throughput, low latency, 
 
 ## 1. Compiler Versioning & Branch Strategy
 
-* **`main` (Protected)**: Targets **Official Stable Zig (`0.16.x`)**. All production releases (`vX.Y.Z`) are cut exclusively from `main`.
-* **`zig-master`**: Tracks upstream `ziglang/zig` nightly builds.
+* **`main` (Protected)**: Requires Zig **0.17.0** or newer; CI tests stable Zig **0.17.1**. All production releases (`vX.Y.Z`) are cut exclusively from `main`.
+* **Development snapshots**: Pin the full Zig version, including the commit suffix, in `build.zig.zon` and CI. Do not describe an unreleased version as stable.
 * **`feat/<name>` / `fix/<name>`**: Branch off `main` for stable changes.
 
 ---
